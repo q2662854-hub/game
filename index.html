@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>سنگِ آتشین | شکار ماشین‌های لوکس</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Red flash overlay when a car escapes -->
+    <div id="escape-flash" class="escape-flash"></div>
+
+    <!-- Custom Dynamic Crosshair -->
+    <div id="crosshair" class="crosshair hidden">
+      <svg class="crosshair-svg" viewBox="0 0 80 80">
+        <circle class="ch-bg-ring" cx="40" cy="40" r="30" />
+        <circle id="ch-charge-ring" class="ch-charge-ring" cx="40" cy="40" r="30" />
+        <line x1="40" y1="6" x2="40" y2="18" class="ch-tick" />
+        <line x1="40" y1="62" x2="40" y2="74" class="ch-tick" />
+        <line x1="6" y1="40" x2="18" y2="40" class="ch-tick" />
+        <line x1="62" y1="40" x2="74" y2="40" class="ch-tick" />
+        <circle cx="40" cy="40" r="3.2" class="ch-dot" />
+      </svg>
+      <div id="crosshair-tag" class="crosshair-tag hidden"></div>
+    </div>
+
+    <!-- Floating impact callouts layer -->
+    <div id="floating-layer" class="floating-layer"></div>
+
+    <!-- Center announcement banner -->
+    <div id="wave-banner" class="wave-banner hidden"></div>
+
+    <!-- Playing HUD -->
+    <div id="hud" class="hud hidden">
+      <div class="hud-top">
+        <!-- Right side (RTL start): Score, Combo, Wave -->
+        <div class="hud-group hud-stats">
+          <div class="stat-pill score-pill">
+            <span class="stat-label">امتیاز</span>
+            <span id="hud-score" class="stat-value">0</span>
+          </div>
+          <div id="hud-combo-pill" class="stat-pill combo-pill hidden">
+            <span id="hud-combo" class="combo-text">x2 کمبو!</span>
+          </div>
+          <div class="stat-pill wave-pill">
+            <span id="hud-wave-label" class="stat-label">موج ۱</span>
+            <div class="wave-bar-track">
+              <div id="hud-wave-fill" class="wave-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Left side (RTL end): Shields, Wrecked, Controls -->
+        <div class="hud-group hud-controls">
+          <div id="hud-lives-box" class="stat-pill lives-pill" title="سپرهای باقی‌مانده">
+            <span id="hud-lives" class="lives-icons"></span>
+          </div>
+          <div class="stat-pill wrecked-pill">
+            <span class="stat-label">منهدم‌شده</span>
+            <span id="hud-wrecked" class="stat-value">0</span>
+          </div>
+          <button id="btn-mute" class="icon-btn" title="صدا">🔊</button>
+          <button id="btn-pause" class="icon-btn" title="توقف">⏸️</button>
+        </div>
+      </div>
+
+      <!-- Bottom-center Inferno Overdrive Bar -->
+      <div class="hud-bottom">
+        <button id="btn-overdrive" class="overdrive-bar" disabled>
+          <div id="overdrive-fill" class="overdrive-fill"></div>
+          <span id="overdrive-label" class="overdrive-label">🔥 خشم آتشین: ۰٪</span>
+        </button>
+        <div class="hud-tip">کلیک: پرتاب سریع &nbsp;|&nbsp; نگه‌داشتن کلیک: سنگ آتشین شارژی (ضدزره) &nbsp;|&nbsp; Space: باران آتش</div>
+      </div>
+    </div>
+
+    <!-- Start Menu Overlay -->
+    <div id="menu-overlay" class="overlay">
+      <div class="card menu-card">
+        <div class="badge-fire">🔥 بازی اکشن سه‌بعدی بزرگراه 🔥</div>
+        <h1 class="game-title">سنگِ آتشین</h1>
+        <p class="game-subtitle">
+          ماشین‌های لوکس مثل <strong>مرسدس بنز، لامبورگینی، بی‌ام‌و، پورشه، فراری، رولز رویس و بوگاتی</strong> در حال عبورند!
+          با سنگ‌های آتشین مستقیم به <strong>شیشه جلو</strong> بزن تا از کار بیفتند و از جاده منحرف شوند!
+        </p>
+
+        <div class="mode-selector">
+          <button id="mode-arcade" class="mode-btn active" data-mode="arcade">
+            <span class="mode-title">🏆 موج‌های آرکید</span>
+            <span class="mode-desc">۵ سپر، موج‌های هیجان‌انگیز و ثبت رکورد</span>
+          </button>
+          <button id="mode-freeplay" class="mode-btn" data-mode="freeplay">
+            <span class="mode-title">🔥 تخریب آزاد</span>
+            <span class="mode-desc">بدون باخت، همه ماشین‌های لوکس از ابتدا</span>
+          </button>
+        </div>
+
+        <div class="controls-grid">
+          <div class="ctrl-item">
+            <span class="ctrl-icon">🎯</span>
+            <div>
+              <strong>نشانه روی شیشه جلو</strong>
+              <p>شیشه خرد می‌شود و ماشین بلافاصله منحرف می‌شود</p>
+            </div>
+          </div>
+          <div class="ctrl-item">
+            <span class="ctrl-icon">☄️</span>
+            <div>
+              <strong>نگه‌داشتن کلیک (شارژ)</strong>
+              <p>سنگ گداخته قوی برای بنز G-Class و رولز رویس زرهی</p>
+            </div>
+          </div>
+          <div class="ctrl-item">
+            <span class="ctrl-icon">⚡</span>
+            <div>
+              <strong>تصادف زنجیره‌ای + باران آتش</strong>
+              <p>ماشین‌های منحرف‌شده می‌توانند بقیه را هم بزنند!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-footer">
+          <button id="btn-start" class="btn-primary">🔥 شروع شکار لوکس‌ها</button>
+          <div id="menu-best" class="best-score-note"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause Overlay -->
+    <div id="pause-overlay" class="overlay hidden">
+      <div class="card compact-card">
+        <h2 class="modal-title">⏸️ بازی متوقف شد</h2>
+        <div class="modal-actions">
+          <button id="btn-resume" class="btn-primary">ادامه بازی</button>
+          <button id="btn-restart-pause" class="btn-secondary">شروع مجدد</button>
+          <button id="btn-menu-pause" class="btn-ghost">بازگشت به منو</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="gameover-overlay" class="overlay hidden">
+      <div class="card gameover-card">
+        <div class="badge-fire">پایان مأموریت</div>
+        <h2 class="modal-title">ماشین‌های لوکس از دستت فرار کردند!</h2>
+
+        <div class="summary-stats">
+          <div class="sum-box highlight">
+            <span class="sum-label">امتیاز نهایی</span>
+            <span id="go-score" class="sum-val">0</span>
+          </div>
+          <div class="sum-box">
+            <span class="sum-label">بهترین رکورد</span>
+            <span id="go-best" class="sum-val">0</span>
+          </div>
+          <div class="sum-box">
+            <span class="sum-label">منهدم‌شده</span>
+            <span id="go-wrecked" class="sum-val">0</span>
+          </div>
+          <div class="sum-box">
+            <span class="sum-label">دقت شیشه جلو</span>
+            <span id="go-accuracy" class="sum-val">0%</span>
+          </div>
+          <div class="sum-box">
+            <span class="sum-label">بیشترین کمبو</span>
+            <span id="go-combo" class="sum-val">x0</span>
+          </div>
+          <div class="sum-box">
+            <span class="sum-label">موج پایانی</span>
+            <span id="go-wave" class="sum-val">1</span>
+          </div>
+        </div>
+
+        <div id="go-brands" class="brands-breakdown"></div>
+
+        <div class="modal-actions row">
+          <button id="btn-replay" class="btn-primary">🔥 بازی مجدد</button>
+          <button id="btn-menu-go" class="btn-secondary">منوی اصلی</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

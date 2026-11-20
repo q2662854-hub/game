@@ -1,0 +1,1 @@
+{"name":"fireline-arcade","version":"1.0.0","private":true,"scripts":{"test":"node --test tests/game.test.cjs","dev":"vite --host 0.0.0.0","build":"vite build","preview":"vite preview --host 0.0.0.0"},"devDependencies":{"vite":"^6.1.0"},"dependencies":{"@fontsource/vazirmatn":"^5.3.0"}}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#08060f">
+<title>شیشه‌شکن — شکار ماشین‌های لوکس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game"></canvas>
+
+  <!-- ======= HUD ======= -->
+  <div id="hud" class="hud">
+    <div class="hud-right">
+      <div class="panel score-panel">
+        <span class="label">امتیاز</span>
+        <span id="score" class="value">۰</span>
+      </div>
+      <div id="combo" class="combo hidden">
+        <span class="combo-x">×</span><span id="combo-num">۲</span>
+        <span class="combo-lbl">کمبو</span>
+      </div>
+    </div>
+
+    <div class="hud-center">
+      <div class="panel time-panel">
+        <span class="label">زمان</span>
+        <span id="time" class="value">۰:۶۰</span>
+      </div>
+    </div>
+
+    <div class="hud-left">
+      <div class="hud-buttons">
+        <button id="btn-sound" class="icon-btn" title="صدا" aria-label="صدا">🔊</button>
+        <button id="btn-pause" class="icon-btn" title="توقف" aria-label="توقف">⏸</button>
+      </div>
+      <div class="ammo-panel">
+        <span class="label">سنگ‌ها</span>
+        <div id="ammo" class="ammo-row"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= MENU ======= -->
+  <div id="menu" class="overlay">
+    <div class="card menu-card">
+      <div class="logo">
+        <span class="logo-fire">🔥</span>
+        <h1>شیشه‌شکن</h1>
+      </div>
+      <p class="tagline">ماشین‌های لوکس از جاده رد می‌شن… سنگ آتشین رو پرت کن، شیشه‌هاشون رو بشکن و از جاده منحرفشون کن!</p>
+
+      <div class="howto">
+        <div class="howto-item">
+          <div class="howto-ico">🎯</div>
+          <div><b>نشانه بگیر</b><span>ماوس یا انگشتت رو روی ماشین ببر</span></div>
+        </div>
+        <div class="howto-item">
+          <div class="howto-ico">⏳</div>
+          <div><b>نگه دار</b><span>هرچی بیشتر نگه داری، پرتاب قوی‌تر</span></div>
+        </div>
+        <div class="howto-item">
+          <div class="howto-ico">💥</div>
+          <div><b>رها کن</b><span>هر دو شیشه رو بشکن تا از کار بیفته</span></div>
+        </div>
+      </div>
+
+      <div class="rules">
+        <span>⏱ ۶۰ ثانیه</span>
+        <span>🚗 ماشین زره‌پوش = ۲ ضربه</span>
+        <span>⭐ ماشین طلایی = ۲ برابر امتیاز</span>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary">شروع بازی</button>
+      <div class="best">رکورد شما: <b id="best-menu">۰</b></div>
+    </div>
+  </div>
+
+  <!-- ======= GAME OVER ======= -->
+  <div id="gameover" class="overlay hidden">
+    <div class="card over-card">
+      <h2 id="over-title">پایان شیفت</h2>
+      <div class="final-score"><span id="final-score">۰</span></div>
+      <div id="new-record" class="new-record hidden">🏆 رکورد جدید!</div>
+
+      <div class="stats">
+        <div class="stat"><span id="st-cars">۰</span><label>ماشین از کار افتاده</label></div>
+        <div class="stat"><span id="st-acc">۰٪</span><label>دقت پرتاب</label></div>
+        <div class="stat"><span id="st-combo">×۲</span><label>بیشترین کمبو</label></div>
+        <div class="stat"><span id="st-best">۰</span><label>رکورد</label></div>
+      </div>
+
+      <div class="over-buttons">
+        <button id="btn-again" class="btn btn-primary">بازی مجدد</button>
+        <button id="btn-menu" class="btn btn-ghost">منو</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= PAUSE ======= -->
+  <div id="pause" class="overlay hidden">
+    <div class="card pause-card">
+      <h2>توقف</h2>
+      <p>برای ادامه، دکمه رو بزن.</p>
+      <button id="btn-resume" class="btn btn-primary">ادامه</button>
+    </div>
+  </div>
+
+  <div id="hint" class="hint hidden">برای پرتاب، کلیک کن و نگه دار…</div>
+  <div class="rotate-hint">📱 برای تجربه‌ی بهتر، گوشی را افقی بگیر</div>
+</div>
+
+<script src="js/audio.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

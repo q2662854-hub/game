@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#07050d">
+<title>شیشه‌شکن — Stone the Lux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+</head>
+<body>
+<div id="wrap">
+  <canvas id="cv"></canvas>
+
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hidden" aria-hidden="true">
+    <div class="hud-top">
+      <div class="hud-box score-box">
+        <span class="hud-lbl">امتیاز</span>
+        <span class="hud-val" id="hudScore">۰</span>
+      </div>
+
+      <div class="hud-box level-box">
+        <div class="level-row">
+          <span class="hud-lbl">مرحله <b id="hudLevel">۱</b></span>
+          <span class="hud-lbl target-lbl">هدف <b id="hudTarget">۰</b></span>
+        </div>
+        <div class="progress"><i id="hudProgress"></i></div>
+        <div class="progress-cap"><span id="hudWrecks">۰</span> ماشین از کار افتاد</div>
+      </div>
+
+      <div class="hud-box time-box">
+        <span class="hud-lbl">زمان</span>
+        <span class="hud-val" id="hudTime">۱:۰۰</span>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="heat-wrap">
+        <span class="hud-lbl">حرارت دست</span>
+        <div class="heat"><i id="hudHeat"></i></div>
+      </div>
+      <div class="combo-wrap">
+        <div class="combo" id="hudCombo">×۱</div>
+        <div class="combo-lbl" id="hudComboLbl">زنجیره ۰</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" data-action="pause" title="توقف">❚❚</button>
+      <button class="icon-btn" data-action="sound" id="soundBtn" title="صدا">🔊</button>
+    </div>
+
+    <div class="banner" id="banner"><span id="bannerText"></span></div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <!-- ================= MENU ================= -->
+  <div class="screen" id="screen-menu">
+    <div class="panel">
+      <div class="kicker">شبِ خیابون‌های شهر</div>
+      <h1 class="logo">شیشه‌شکن</h1>
+      <p class="tagline">سنگِ آتشین بردار، به شیشهٔ ماشین‌های لوکس بزن تا از کار بیفتن و از جاده منحرف بشن.</p>
+      <div class="btn-row">
+        <button class="btn primary" data-action="start">شروع بازی</button>
+        <button class="btn ghost" data-action="help">راهنما</button>
+      </div>
+      <div class="meta-row">
+        <div class="meta"><span>رکورد</span><b id="bestScore">۰</b></div>
+        <div class="meta"><span>بهترین زنجیره</span><b id="bestCombo">۰</b></div>
+        <div class="meta"><span>ماشین‌های خرد‌شده</span><b id="totalWrecks">۰</b></div>
+      </div>
+      <div class="hint-row">
+        <span class="chip">🖱️ کلیک = پرتاب سنگ</span>
+        <span class="chip">⌨️ Space = پرتاب</span>
+        <span class="chip">P = توقف</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= HELP ================= -->
+  <div class="screen hidden" id="screen-help">
+    <div class="panel wide">
+      <h2 class="panel-title">راهنمای بازی</h2>
+      <ul class="rules">
+        <li><b>هدف:</b> ماشین‌های لوکس از افق میان و میانِ تو. با سنگِ آتشین شیشه‌شون رو خرد کن تا از کنترل خارج بشن و از جاده منحرف بشن.</li>
+        <li><b>شیشهٔ جلو و عقب</b> بیشترین ضربه رو می‌گیرن. هر ماشین چند ضربه لازم داره؛ تعدادش کنار اسمش معلومه.</li>
+        <li><b>بدنهٔ ماشین</b> فقط جرقه می‌ده و امتیاز کمی داره — دقیق بزن!</li>
+        <li><b>زنجیره:</b> پشت‌سرهم بزن تا ضریب امتیازت بالا بره (تا ×۵).</li>
+        <li><b>حرارت دست:</b> اگه بی‌وقفه پرتاب کنی دستت داغ می‌کنه و چند لحظه قفل می‌شه.</li>
+        <li><b>ماشین زره‌پوش</b> ضربهٔ بیشتری می‌خواد ولی امتیازش خیلی بالاست. پلیس هم امتیاز دوبرابر داره.</li>
+      </ul>
+      <div class="btn-row">
+        <button class="btn primary" data-action="start">بزن بریم</button>
+        <button class="btn ghost" data-action="menu">بازگشت</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PAUSE ================= -->
+  <div class="screen hidden" id="screen-pause">
+    <div class="panel">
+      <h2 class="panel-title">توقف</h2>
+      <p class="tagline">نفس بگیر؛ ماشین‌ها منتظرن.</p>
+      <div class="btn-row">
+        <button class="btn primary" data-action="resume">ادامه</button>
+        <button class="btn ghost" data-action="restart">شروع دوباره</button>
+        <button class="btn ghost" data-action="menu">منو</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GAME OVER ================= -->
+  <div class="screen hidden" id="screen-over">
+    <div class="panel">
+      <div class="kicker">وقت تموم شد</div>
+      <h2 class="panel-title big" id="overTitle">دستت گرم!</h2>
+      <div class="final-score">
+        <span class="hud-lbl">امتیاز نهایی</span>
+        <b id="overScore">۰</b>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><span>ماشین از کار افتاد</span><b id="overWrecks">۰</b></div>
+        <div class="stat"><span>شیشه خرد شد</span><b id="overShatters">۰</b></div>
+        <div class="stat"><span>بهترین زنجیره</span><b id="overCombo">۰</b></div>
+        <div class="stat"><span>مرحله</span><b id="overLevel">۱</b></div>
+      </div>
+      <div class="record-tag hidden" id="recordTag">🏆 رکورد جدید!</div>
+      <div class="btn-row">
+        <button class="btn primary" data-action="start">دوباره بزن</button>
+        <button class="btn ghost" data-action="menu">منو</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

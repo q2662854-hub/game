@@ -2,173 +2,181 @@
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>سنگ آتشین | شکار ماشین‌های لوکس</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#06030f" />
+    <title>NEON 2048 — بازی سه‌بعدی</title>
+    <link rel="preload" href="/node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
-    <div id="game-shell">
-      <canvas id="game-canvas"></canvas>
+    <div id="app">
+      <canvas id="scene"></canvas>
+      <div class="vignette"></div>
+      <div class="grain"></div>
 
-      <!-- Live HUD -->
-      <header id="hud" class="hidden" aria-label="اطلاعات بازی">
-        <div class="hud-group hud-right">
-          <div class="stat-pill score-pill">
-            <span class="stat-label">امتیاز</span>
-            <strong id="hud-score" class="stat-value">۰</strong>
+      <!-- ══════════ HUD ══════════ -->
+      <header id="hud">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="mark-cell">2</span>
+            <span class="mark-cell">0</span>
+            <span class="mark-cell">4</span>
+            <span class="mark-cell">8</span>
           </div>
-          <div class="stat-pill wave-pill" id="wave-pill">
-            <span class="stat-label">موج</span>
-            <strong id="hud-wave" class="stat-value">۱</strong>
-          </div>
-          <div class="stat-pill combo-pill hidden" id="combo-pill">
-            <span class="stat-label">کمبو</span>
-            <strong id="hud-combo" class="stat-value">×۲</strong>
+          <div class="brand-copy">
+            <h1>NEON<span>2048</span></h1>
+            <p>بلوک‌های نور را به هم بچسبان</p>
           </div>
         </div>
 
-        <div class="hud-center">
-          <div class="inferno-wrap" id="inferno-wrap">
-            <div class="inferno-header">
-              <span id="inferno-title">خشم آتشفشان</span>
-              <span id="inferno-percent">۰٪</span>
-            </div>
-            <div class="inferno-track">
-              <div class="inferno-fill" id="inferno-fill"></div>
-            </div>
+        <div class="scoreboard">
+          <div class="score-card" id="score-card">
+            <span class="score-label">SCORE</span>
+            <strong class="score-value" id="score-value">0</strong>
+          </div>
+          <div class="score-card best-card">
+            <span class="score-label">BEST</span>
+            <strong class="score-value" id="best-value">0</strong>
           </div>
         </div>
 
-        <div class="hud-group hud-left">
-          <div class="shields-pill" id="shields-pill" title="تعداد ماشین‌هایی که می‌توانید از دست بدهید">
-            <span class="stat-label">سپر جاده</span>
-            <div id="hud-shields" class="shields-icons"></div>
-          </div>
-          <button id="btn-mute" class="icon-btn" type="button" title="صدا" aria-label="قطع یا وصل صدا">🔊</button>
-          <button id="btn-pause" class="icon-btn" type="button" title="توقف" aria-label="توقف بازی">⏸</button>
+        <div class="hud-actions">
+          <button class="pill-button" id="btn-undo" type="button" title="برگرداندن حرکت (Backspace)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h9a6 6 0 1 1 0 12H8"/></svg>
+            <span>UNDO</span>
+          </button>
+          <button class="pill-button" id="btn-restart" type="button" title="بازی جدید (R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            <span>NEW</span>
+          </button>
+          <button class="icon-button" id="btn-sound" type="button" aria-label="صدا" title="صدا">
+            <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6"/><path d="m21 9-5 6"/></svg>
+          </button>
+          <button class="icon-button" id="btn-view" type="button" aria-label="چرخش دوربین" title="چرخش صحنه (V)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M3.5 12c0-3 3.8-5.4 8.5-5.4s8.5 2.4 8.5 5.4-3.8 5.4-8.5 5.4S3.5 15 3.5 12Z" transform="rotate(-20 12 12)"/></svg>
+          </button>
         </div>
       </header>
 
-      <!-- Subtle bottom control tip during first seconds -->
-      <div id="controls-tip" class="controls-tip hidden">
-        <span>کلیک / لمس: پرتاب سنگ آتشین به شیشه جلو</span>
-        <span class="dot">•</span>
-        <span>نگه‌داشتن کلیک: شهاب‌سنگ مذاب قوی‌تر!</span>
+      <!-- ══════════ Milestone toast ══════════ -->
+      <div id="milestone" role="status" aria-live="polite">
+        <span class="milestone-eyebrow">MILESTONE</span>
+        <span class="milestone-title" id="milestone-title">512</span>
+        <span class="milestone-sub" id="milestone-sub">بلوک نئونی آزاد شد</span>
       </div>
 
-      <!-- Wave banner -->
-      <div id="wave-banner" class="wave-banner hidden">
-        <div class="wave-banner-sub" id="wave-banner-sub">موج جدید</div>
-        <div class="wave-banner-title" id="wave-banner-title">کاروان بنز و لامبورگینی!</div>
+      <!-- ══════════ Start screen ══════════ -->
+      <section id="screen-start" class="screen active">
+        <div class="screen-panel start-panel">
+          <span class="eyebrow">THREE.JS · GLASS · NEON</span>
+          <h2 class="hero-title">
+            <span class="line">NEON</span>
+            <span class="line gradient">2048</span>
+          </h2>
+          <p class="subtitle">بلوک‌های نورانی را روی هم بلغزان، هم‌عددها را ادغام کن و تا بلوک اسطوره‌ای <strong>2048</strong> بالا برو.</p>
+
+          <div class="tag-row">
+            <span class="tag">سه‌بعدی واقعی</span>
+            <span class="tag">بلوک شیشه‌ای</span>
+            <span class="tag">لیزر و ذرات</span>
+            <span class="tag">صداگذاری زنده</span>
+          </div>
+
+          <button id="btn-play" class="cta" type="button">
+            <span class="cta-glow"></span>
+            <span class="cta-label">شروع بازی</span>
+            <span class="cta-hint">SPACE</span>
+          </button>
+
+          <div class="how">
+            <div class="how-item">
+              <span class="how-keys"><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd><kbd>←</kbd></span>
+              <span>حرکت / سوایپ</span>
+            </div>
+            <div class="how-item">
+              <span class="how-keys"><kbd>U</kbd></span>
+              <span>بازگردانی</span>
+            </div>
+            <div class="how-item">
+              <span class="how-keys"><kbd>R</kbd></span>
+              <span>شروع دوباره</span>
+            </div>
+          </div>
+          <p class="best-line">رکورد تو: <strong id="start-best">0</strong></p>
+        </div>
+      </section>
+
+      <!-- ══════════ Game over ══════════ -->
+      <section id="screen-over" class="screen">
+        <div class="screen-panel over-panel">
+          <span class="eyebrow danger">GAME OVER</span>
+          <h2 class="over-title">صفحه پر شد</h2>
+          <p class="subtitle">حرکتی باقی نماند — اما رکوردت را ثبت کردیم.</p>
+          <div class="over-stats">
+            <div class="over-stat">
+              <span>SCORE</span>
+              <strong id="over-score">0</strong>
+            </div>
+            <div class="over-stat">
+              <span>BEST BLOCK</span>
+              <strong id="over-tile">0</strong>
+            </div>
+            <div class="over-stat">
+              <span>MOVES</span>
+              <strong id="over-moves">0</strong>
+            </div>
+          </div>
+          <div class="over-buttons">
+            <button class="cta" id="btn-again" type="button">
+              <span class="cta-glow"></span>
+              <span class="cta-label">بازی دوباره</span>
+              <span class="cta-hint">SPACE</span>
+            </button>
+            <button class="ghost-button" id="btn-undo-over" type="button">یک قدم عقب</button>
+          </div>
+          <p class="best-line" id="over-record"></p>
+        </div>
+      </section>
+
+      <!-- ══════════ Win / keep going ══════════ -->
+      <section id="screen-win" class="screen">
+        <div class="screen-panel win-panel">
+          <span class="eyebrow">2048 UNLOCKED</span>
+          <h2 class="over-title gradient">بلوک <span class="latin">2048</span>!</h2>
+          <p class="subtitle">شگفت‌انگیز است — می‌توانی همین‌جا قهرمان شوی یا مسیر را ادامه دهی.</p>
+          <div class="over-buttons">
+            <button class="cta" id="btn-keep" type="button">
+              <span class="cta-glow"></span>
+              <span class="cta-label">ادامه بده</span>
+            </button>
+            <button class="ghost-button" id="btn-restart-win" type="button">بازی جدید</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ Loading ══════════ -->
+      <div id="loader">
+        <div class="loader-core">
+          <div class="loader-cube"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span>NEON 2048</span>
+        </div>
       </div>
 
-      <!-- Start Overlay -->
-      <section id="start-overlay" class="overlay">
-        <div class="panel start-panel">
-          <div class="badge-row">
-            <span class="fire-badge">🔥 اکشن آرکید اتوبان</span>
-            <span class="best-badge" id="start-best">رکورد: ۰</span>
-          </div>
-          <h1 class="game-title">سنگ آتشین</h1>
-          <p class="game-subtitle">
-            از روی پل هوایی به شیشه جلو ماشین‌های لوکس مثل <strong>بنز</strong>، <strong>لامبورگینی</strong>، <strong>پورشه</strong> و <strong>رولزرویس</strong> سنگ آتشین بزن تا از کار بیفتند و از جاده منحرف شوند!
-          </p>
+      <footer id="hint-bar">
+        <span class="hint-desktop">کلیدهای جهت‌دار یا WASD · سوایپ روی موبایل · <b>R</b> بازی جدید</span>
+        <span class="hint-mobile">برای حرکت، انگشتت را بکش · دکمه‌ی UNDO برای بازگردانی</span>
+      </footer>
 
-          <div class="car-roster">
-            <div class="roster-chip">⭐ بنز AMG GT</div>
-            <div class="roster-chip">🛡 بنز G63 زرهی</div>
-            <div class="roster-chip">⚡ لامبورگینی</div>
-            <div class="roster-chip">🏎 پورشه ۹۱۱</div>
-            <div class="roster-chip">👑 رولزرویس VIP</div>
-            <div class="roster-chip">🔥 فراری SF90</div>
-          </div>
-
-          <div class="tips-grid">
-            <div class="tip-card">
-              <div class="tip-icon">🎯</div>
-              <div>
-                <strong>هدف: شیشه جلو</strong>
-                <p>ضربه مستقیم به شیشه، ماشین را فوری از کنترل خارج می‌کند.</p>
-              </div>
-            </div>
-            <div class="tip-card">
-              <div class="tip-icon">☄️</div>
-              <div>
-                <strong>شهاب‌سنگ شارژی</strong>
-                <p>کلیک را کمی نگه دار تا سنگ بزرگ‌تر با موج انفجاری پرتاب شود.</p>
-              </div>
-            </div>
-            <div class="tip-card">
-              <div class="tip-icon">💥</div>
-              <div>
-                <strong>واکنش زنجیره‌ای</strong>
-                <p>ماشین‌های منحرف‌شده می‌توانند به بقیه بخورند و امتیاز دوبل بدهند!</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="mode-actions">
-            <button id="btn-start-arcade" class="primary-btn" type="button">
-              <span>🔥 شروع بازی (حالت موج‌ها)</span>
-            </button>
-            <button id="btn-start-endless" class="secondary-btn" type="button">
-              <span>♾️ حالت آزاد بی‌نهایت</span>
-            </button>
-          </div>
+      <!-- Touch d-pad for mobile -->
+      <div id="dpad" aria-hidden="false">
+        <button data-dir="up" aria-label="بالا">▲</button>
+        <div class="dpad-mid">
+          <button data-dir="left" aria-label="چپ">◀</button>
+          <button data-dir="down" aria-label="پایین">▼</button>
+          <button data-dir="right" aria-label="راست">▶</button>
         </div>
-      </section>
-
-      <!-- Pause Overlay -->
-      <section id="pause-overlay" class="overlay hidden">
-        <div class="panel compact-panel">
-          <h2 class="panel-title">بازی متوقف شد</h2>
-          <p class="panel-desc">نفس عمیقی بکش، ماشین‌های لوکس هنوز توی جاده‌ان!</p>
-          <div class="stack-actions">
-            <button id="btn-resume" class="primary-btn" type="button">ادامه بازی</button>
-            <button id="btn-restart-pause" class="secondary-btn" type="button">شروع مجدد</button>
-            <button id="btn-menu-pause" class="ghost-btn" type="button">بازگشت به منو</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Game Over Overlay -->
-      <section id="gameover-overlay" class="overlay hidden">
-        <div class="panel gameover-panel">
-          <div class="gameover-tag" id="gameover-tag">پایان موج</div>
-          <h2 class="panel-title" id="gameover-title">ماشین‌ها از پل گذشتند!</h2>
-
-          <div class="score-hero">
-            <span class="score-hero-label">امتیاز نهایی</span>
-            <strong id="go-score" class="score-hero-value">۰</strong>
-            <span id="go-new-record" class="new-record hidden">🏆 رکورد جدید ثبت شد!</span>
-          </div>
-
-          <div class="stats-grid">
-            <div class="go-stat">
-              <span>ماشین‌های منحرف‌شده</span>
-              <strong id="go-cars">۰</strong>
-            </div>
-            <div class="go-stat">
-              <span>شیشه‌های شکسته</span>
-              <strong id="go-windshields">۰</strong>
-            </div>
-            <div class="go-stat">
-              <span>بیشترین کمبو</span>
-              <strong id="go-combo">×۰</strong>
-            </div>
-            <div class="go-stat">
-              <span>واکنش زنجیره‌ای</span>
-              <strong id="go-chains">۰</strong>
-            </div>
-          </div>
-
-          <div class="mode-actions">
-            <button id="btn-play-again" class="primary-btn" type="button">🔥 بازی دوباره</button>
-            <button id="btn-menu-gameover" class="secondary-btn" type="button">منوی اصلی</button>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
-
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

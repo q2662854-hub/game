@@ -1,0 +1,304 @@
+<div id="app" dir="rtl" lang="fa">
+  <canvas id="game-canvas" aria-label="میز بیلیارد سه‌بعدی"></canvas>
+  <div class="stage-vignette"></div>
+  <div class="grain"></div>
+
+  <!-- ==================================================================
+       HUD
+       ================================================================== -->
+  <div id="hud" class="hidden-fade" aria-hidden="true">
+    <div class="hud-left">
+      <div class="brand-chip">
+        <div class="brand-emblem">۸</div>
+        <div class="brand-copy">
+          <div class="brand-title">MAISON BILLARD</div>
+          <div class="brand-sub">سالنِ بیلیاردِ سلطنتی</div>
+        </div>
+      </div>
+
+      <div class="score-panel">
+        <div class="score-cell" id="cell-score">
+          <span class="score-label">امتیاز</span>
+          <strong class="score-value accent" id="stat-score">۰</strong>
+        </div>
+        <div class="score-cell" id="cell-pots">
+          <span class="score-label">توپ‌ها</span>
+          <strong class="score-value" id="stat-pots">۰</strong>
+        </div>
+        <div class="score-cell" id="cell-streak">
+          <span class="score-label">زنجیره</span>
+          <strong class="score-value cyan" id="stat-streak">×۰</strong>
+        </div>
+      </div>
+
+      <div class="group-row">
+        <div class="group-chip" id="chip-you">
+          <span class="dot" id="chip-you-dot"></span>
+          <span id="chip-you-label">رنگ تو</span>
+        </div>
+        <div class="group-chip" id="chip-ai">
+          <span class="dot" id="chip-ai-dot"></span>
+          <span id="chip-ai-label">رنگ حریف</span>
+        </div>
+        <span class="group-badge" id="group-badge">میز باز</span>
+      </div>
+    </div>
+
+    <div class="hud-center">
+      <div class="turn-card is-you" id="turn-card">
+        <div class="turn-avatar" id="turn-avatar">تو</div>
+        <div class="turn-info">
+          <span class="turn-name" id="turn-name">نوبت توست</span>
+          <span class="turn-state" id="turn-state">توپ در دست نیست</span>
+        </div>
+        <div class="turn-think"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <div class="icon-row">
+        <button class="icon-btn" id="btn-sound" title="صدا" aria-label="صدا">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-cam" title="دوربین" aria-label="دوربین">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.7l1.2-2h7.2l1.2 2h1.7A2.5 2.5 0 0 1 21 8.5v9A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.4"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-pause" title="توقف" aria-label="توقف">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5v14M15 5v14"/></svg>
+        </button>
+      </div>
+      <div class="score-panel">
+        <div class="score-cell">
+          <span class="score-label">زمان</span>
+          <strong class="score-value" id="stat-time">۰۰:۰۰</strong>
+        </div>
+        <div class="score-cell">
+          <span class="score-label">رکورد</span>
+          <strong class="score-value" id="stat-best">۰</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="turn-banner" id="turn-banner">
+        <div class="tb-title" id="tb-title">نوبت تو</div>
+        <div class="tb-sub" id="tb-sub">TOUR DE TOI</div>
+        <div class="tb-line"></div>
+      </div>
+
+      <div class="aim-nudge" id="aim-nudge">
+        <button class="nudge-btn" data-nudge="-">&#8592;</button>
+        <button class="nudge-btn" data-nudge="+">&#8594;</button>
+        <button class="nudge-btn" data-nudge="menu">&#8942;</button>
+      </div>
+
+      <div class="shot-panel" id="shot-panel">
+        <div>
+          <div class="power-head">
+            <span class="power-title">قدرت ضربه</span>
+            <span class="power-readout" id="power-readout">۵۵٪</span>
+          </div>
+          <div class="power-track" id="power-track" role="slider" aria-label="قدرت ضربه" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" tabindex="0">
+            <div class="power-fill" id="power-fill"></div>
+          </div>
+          <div class="power-marks">
+            <span>آرام</span><span>میانه</span><span>سهمگین</span>
+          </div>
+        </div>
+        <button class="shoot-btn" id="btn-shoot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 20 4"/><circle cx="17.5" cy="6.5" r="2.2"/></svg>
+          <span id="shoot-label">ضربه</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="float-layer" id="float-layer"></div>
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <!-- ==================================================================
+       START SCREEN
+       ================================================================== -->
+  <div class="overlay" id="overlay-start">
+    <div class="overlay-inner glass">
+      <div class="crest"><span>۸</span></div>
+      <div class="kicker">A Private Billiards Salon</div>
+      <h1 class="game-title gold-text">
+        میزِ اشرافی
+        <span class="thin">بیلیارد ۸ توپ · سه‌بعدی</span>
+      </h1>
+      <p class="lede">
+        یک میز چوب‌گردو و ماهوتِ زمردی، پانزده توپ رزینی و یک حریفِ سرسخت.
+        چوب را بردار، زاویه را پیدا کن و توپِ ۸ را در پایانِ تمیز بینداز.
+      </p>
+
+      <div class="rule-grid">
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M12 12v8"/><path d="M8 20h8"/></svg>
+          </div>
+          <div>
+            <b>نشانه‌گیری با ماوس</b>
+            <p>ماوس را حرکت بده تا خطِ نشانه روی توپ بیفتد؛ کلیک یعنی ضربه.</p>
+          </div>
+        </div>
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16c3 0 3-8 6-8s3 8 6 8 4-4 4-4"/><path d="M3 20h18"/></svg>
+          </div>
+          <div>
+            <b>قدرت ضربه</b>
+            <p>با اسکرول یا کشیدنِ ماوس به بالا قدرت را زیاد کن؛ با کلیدهای ↑ ↓ هم می‌شود.</p>
+          </div>
+        </div>
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg>
+          </div>
+          <div>
+            <b>قانونِ هشت</b>
+            <p>اول توپِ هم‌رنگت را تمیز کن؛ ضربهٔ خطا یا سفیدِ افتاده، نوبت را می‌بَرد.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="best-strip">
+        <div class="best-item">
+          <span>رکورد امتیاز</span>
+          <strong id="start-best">۰</strong>
+        </div>
+        <div class="best-item">
+          <span>بهترین زنجیره</span>
+          <strong id="start-streak">۰</strong>
+        </div>
+        <div class="best-item">
+          <span>حریف</span>
+          <strong>استادِ سالن</strong>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-start">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16l13-8z"/></svg>
+          شروع بازی
+        </button>
+        <button class="btn btn-ghost" id="btn-howto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 17v-1M12 13.5c0-2 2.5-2.2 2.5-4A2.5 2.5 0 0 0 9.7 8"/></svg>
+          راهنمای کامل
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       HELP
+       ================================================================== -->
+  <div class="overlay hidden" id="overlay-help">
+    <div class="overlay-inner glass" style="max-width: 620px">
+      <div class="kicker">Guide du Salon</div>
+      <h2 class="game-title gold-text" style="font-size: clamp(26px, 4vw, 36px)">راهنمای بازی</h2>
+      <div class="rule-grid" style="grid-template-columns: 1fr">
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M12 4v16"/></svg>
+          </div>
+          <div><b>حرکت ماوس / انگشت</b><p>جهتِ ضربه را تعیین می‌کند. روی صفحهٔ لمسی، کشیدنِ افقی زاویه را می‌چرخاند.</p></div>
+        </div>
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M8 8l4-4 4 4M8 16l4 4 4-4"/></svg>
+          </div>
+          <div><b>قدرت</b><p>اسکرول ماوس، کلیدهای ↑↓ یا کشیدنِ عمودی روی قدرت. نوارِ پایین صفحه هم قابل کشیدن است.</p></div>
+        </div>
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="1"/><path d="M7 9V7M17 9V7"/></svg>
+          </div>
+          <div><b>ضربه زدن</b><p>کلید Space، دکمهٔ «ضربه» یا رها کردنِ کلیک. اگر توپ سفید افتاد، جای آن را خودت انتخاب می‌کنی.</p></div>
+        </div>
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 9 8l4 8 3-5 5 9z"/><circle cx="8" cy="5" r="2"/></svg>
+          </div>
+          <div><b>قوانین</b><p>میز تا اولین توپِ افتاده «باز» است. بعد از آن باید فقط توپ‌های گروهِ خودت را بزنی. توپِ ۸ آخرین توپ است و در پایانِ تمیز برنده می‌شوی.</p></div>
+        </div>
+        <div class="rule">
+          <div class="rule-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+          </div>
+          <div><b>دوربین و صدا</b><p>دکمهٔ دوربین نمای کل میز را نشان می‌دهد؛ دکمهٔ صدا موسیقیِ سالن را خاموش می‌کند. Escape بازی را متوقف می‌کند.</p></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-help-close">فهمیدم</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       PAUSE
+       ================================================================== -->
+  <div class="overlay hidden" id="overlay-pause">
+    <div class="overlay-inner glass" style="max-width: 480px">
+      <div class="kicker">Entracte</div>
+      <h2 class="game-title gold-text" style="font-size: clamp(28px, 5vw, 40px)">بازی متوقف شد</h2>
+      <p class="lede">نفس بگیر؛ میز منتظر توست.</p>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-resume">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16l13-8z"/></svg>
+          ادامه
+        </button>
+        <button class="btn btn-ghost" id="btn-restart-pause">شروع دوباره</button>
+        <button class="btn btn-ghost" id="btn-menu-pause">منوی اصلی</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       RESULT
+       ================================================================== -->
+  <div class="overlay hidden" id="overlay-result">
+    <div class="overlay-inner glass" style="max-width: 620px">
+      <div class="crest" id="result-crest">
+        <span id="result-crest-mark">۸</span>
+        <svg id="result-crest-icon" class="crest-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 4h8v4.5a4 4 0 0 1-8 0z"/>
+          <path d="M8 5.5H5.5A2.5 2.5 0 0 0 8 9.6"/>
+          <path d="M16 5.5h2.5A2.5 2.5 0 0 1 16 9.6"/>
+          <path d="M12 13v3.5"/>
+          <path d="M9 20h6"/>
+          <path d="M10.2 16.5h3.6L14.6 20H9.4z"/>
+        </svg>
+      </div>
+      <div class="kicker" id="result-kicker">Fin de Partie</div>
+      <h2 class="result-title win" id="result-title">پیروزی</h2>
+      <p class="result-reason" id="result-reason">توپِ ۸ در پایانِ تمیز افتاد.</p>
+      <div class="record-pill hidden" id="record-pill">✦ رکورد تازه ثبت شد ✦</div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><span>امتیاز نهایی</span><strong id="res-score">۰</strong></div>
+        <div class="stat-card"><span>توپ‌های افتاده</span><strong id="res-pots">۰</strong></div>
+        <div class="stat-card"><span>خطاها</span><strong id="res-fouls">۰</strong></div>
+        <div class="stat-card"><span>زمان</span><strong id="res-time">۰۰:۰۰</strong></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-again">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+          بازیِ دوباره
+        </button>
+        <button class="btn btn-ghost" id="btn-menu-result">منوی اصلی</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       BOOT
+       ================================================================== -->
+  <div id="boot">
+    <div class="boot-inner">
+      <div class="boot-ring"></div>
+      <div class="boot-label">MAISON BILLARD</div>
+    </div>
+  </div>
+</div>

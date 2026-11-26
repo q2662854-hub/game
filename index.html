@@ -1,174 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>سنگ آتشین | شکار ماشین‌های لوکس</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f1ec" />
+    <title>2048 | بازی اعداد</title>
   </head>
   <body>
-    <div id="game-shell">
-      <canvas id="game-canvas"></canvas>
-
-      <!-- Live HUD -->
-      <header id="hud" class="hidden" aria-label="اطلاعات بازی">
-        <div class="hud-group hud-right">
-          <div class="stat-pill score-pill">
-            <span class="stat-label">امتیاز</span>
-            <strong id="hud-score" class="stat-value">۰</strong>
-          </div>
-          <div class="stat-pill wave-pill" id="wave-pill">
-            <span class="stat-label">موج</span>
-            <strong id="hud-wave" class="stat-value">۱</strong>
-          </div>
-          <div class="stat-pill combo-pill hidden" id="combo-pill">
-            <span class="stat-label">کمبو</span>
-            <strong id="hud-combo" class="stat-value">×۲</strong>
-          </div>
-        </div>
-
-        <div class="hud-center">
-          <div class="inferno-wrap" id="inferno-wrap">
-            <div class="inferno-header">
-              <span id="inferno-title">خشم آتشفشان</span>
-              <span id="inferno-percent">۰٪</span>
-            </div>
-            <div class="inferno-track">
-              <div class="inferno-fill" id="inferno-fill"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hud-group hud-left">
-          <div class="shields-pill" id="shields-pill" title="تعداد ماشین‌هایی که می‌توانید از دست بدهید">
-            <span class="stat-label">سپر جاده</span>
-            <div id="hud-shields" class="shields-icons"></div>
-          </div>
-          <button id="btn-mute" class="icon-btn" type="button" title="صدا" aria-label="قطع یا وصل صدا">🔊</button>
-          <button id="btn-pause" class="icon-btn" type="button" title="توقف" aria-label="توقف بازی">⏸</button>
-        </div>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="2048 خانه"><span class="brand-mark"><i></i><i></i><i></i><i></i></span><span>NUMBER<span class="brand-accent">PLAY</span></span></a>
+        <div class="header-center"><span class="status-dot"></span> یه بازی کوچیک برای لحظه‌های بزرگ</div>
+        <button class="sound-button" id="sound" aria-label="روشن کردن صدا" title="صدا"><span id="sound-icon">♪</span><span id="sound-label">صدا خاموش</span></button>
       </header>
 
-      <!-- Subtle bottom control tip during first seconds -->
-      <div id="controls-tip" class="controls-tip hidden">
-        <span>کلیک / لمس: پرتاب سنگ آتشین به شیشه جلو</span>
-        <span class="dot">•</span>
-        <span>نگه‌داشتن کلیک: شهاب‌سنگ مذاب قوی‌تر!</span>
-      </div>
-
-      <!-- Wave banner -->
-      <div id="wave-banner" class="wave-banner hidden">
-        <div class="wave-banner-sub" id="wave-banner-sub">موج جدید</div>
-        <div class="wave-banner-title" id="wave-banner-title">کاروان بنز و لامبورگینی!</div>
-      </div>
-
-      <!-- Start Overlay -->
-      <section id="start-overlay" class="overlay">
-        <div class="panel start-panel">
-          <div class="badge-row">
-            <span class="fire-badge">🔥 اکشن آرکید اتوبان</span>
-            <span class="best-badge" id="start-best">رکورد: ۰</span>
+      <main class="layout">
+        <section class="intro" aria-labelledby="title">
+          <div class="eyebrow"><span class="sparkle">✳</span> چالش دوست‌داشتنی اعداد <span class="eyebrow-line"></span></div>
+          <h1 id="title">فکر کن.<br>ترکیب کن.<br><span>برنده شو.</span></h1>
+          <p class="description">یه بازی ساده، یه چالش بی‌پایان! کاشی‌های هم‌عدد رو با هم ترکیب کن و خودت رو به <b dir="ltr">2048</b> برسون.</p>
+          <div class="score-row">
+            <div class="score-card"><span>امتیاز فعلی</span><strong id="score" dir="ltr">0</strong><div class="score-icon">↗</div></div>
+            <div class="score-card best-card"><span>بهترین رکورد</span><strong id="best" dir="ltr">0</strong><div class="score-icon">✦</div></div>
           </div>
-          <h1 class="game-title">سنگ آتشین</h1>
-          <p class="game-subtitle">
-            از روی پل هوایی به شیشه جلو ماشین‌های لوکس مثل <strong>بنز</strong>، <strong>لامبورگینی</strong>، <strong>پورشه</strong> و <strong>رولزرویس</strong> سنگ آتشین بزن تا از کار بیفتند و از جاده منحرف شوند!
-          </p>
+          <div class="action-row"><button id="restart" class="primary-btn"><span class="restart-icon">↻</span> بازی جدید</button><button id="undo" class="undo-btn" title="برگرداندن آخرین حرکت" aria-label="برگرداندن آخرین حرکت">↶</button></div>
+          <div class="divider"></div>
+          <div class="howto"><div class="how-icon">✳</div><div><h2>چطوری بازی کنم؟</h2><p>با کلیدهای جهت‌دار یا کشیدن انگشت، کاشی‌ها رو حرکت بده. عددهای یکسان با هم جمع می‌شن!</p></div></div>
+          <div class="key-hint" dir="ltr"><div class="key-stack"><kbd>↑</kbd><span><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></span></div><span>USE ARROW KEYS TO PLAY</span></div>
+        </section>
 
-          <div class="car-roster">
-            <div class="roster-chip">⭐ بنز AMG GT</div>
-            <div class="roster-chip">🛡 بنز G63 زرهی</div>
-            <div class="roster-chip">⚡ لامبورگینی</div>
-            <div class="roster-chip">🏎 پورشه ۹۱۱</div>
-            <div class="roster-chip">👑 رولزرویس VIP</div>
-            <div class="roster-chip">🔥 فراری SF90</div>
-          </div>
-
-          <div class="tips-grid">
-            <div class="tip-card">
-              <div class="tip-icon">🎯</div>
-              <div>
-                <strong>هدف: شیشه جلو</strong>
-                <p>ضربه مستقیم به شیشه، ماشین را فوری از کنترل خارج می‌کند.</p>
-              </div>
+        <section class="game-area" aria-label="بازی 2048">
+          <div class="game-topline"><div><span class="mini-dot"></span> فضای بازی <span class="line-sep">/</span> <b>CLASSIC MODE</b></div><span class="level-label" dir="ltr">LEVEL 01 <span>✳</span></span></div>
+          <div class="board-stage">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="star star-one">✦</div><div class="star star-two">✳</div><div class="star star-three">✧</div>
+            <div class="board-wrap" id="swipe-area">
+              <div class="board" id="board" role="grid" aria-label="صفحه بازی 2048"></div>
             </div>
-            <div class="tip-card">
-              <div class="tip-icon">☄️</div>
-              <div>
-                <strong>شهاب‌سنگ شارژی</strong>
-                <p>کلیک را کمی نگه دار تا سنگ بزرگ‌تر با موج انفجاری پرتاب شود.</p>
-              </div>
-            </div>
-            <div class="tip-card">
-              <div class="tip-icon">💥</div>
-              <div>
-                <strong>واکنش زنجیره‌ای</strong>
-                <p>ماشین‌های منحرف‌شده می‌توانند به بقیه بخورند و امتیاز دوبل بدهند!</p>
-              </div>
-            </div>
+            <div class="game-overlay hidden" id="overlay"><div class="overlay-card"><span class="overlay-spark">✦</span><h2 id="overlay-title"></h2><p id="overlay-message"></p><div class="overlay-actions"><button id="overlay-restart" class="primary-btn">بازی دوباره ↻</button><button id="continue" class="continue-btn">ادامه بازی</button></div></div></div>
           </div>
-
-          <div class="mode-actions">
-            <button id="btn-start-arcade" class="primary-btn" type="button">
-              <span>🔥 شروع بازی (حالت موج‌ها)</span>
-            </button>
-            <button id="btn-start-endless" class="secondary-btn" type="button">
-              <span>♾️ حالت آزاد بی‌نهایت</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Pause Overlay -->
-      <section id="pause-overlay" class="overlay hidden">
-        <div class="panel compact-panel">
-          <h2 class="panel-title">بازی متوقف شد</h2>
-          <p class="panel-desc">نفس عمیقی بکش، ماشین‌های لوکس هنوز توی جاده‌ان!</p>
-          <div class="stack-actions">
-            <button id="btn-resume" class="primary-btn" type="button">ادامه بازی</button>
-            <button id="btn-restart-pause" class="secondary-btn" type="button">شروع مجدد</button>
-            <button id="btn-menu-pause" class="ghost-btn" type="button">بازگشت به منو</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Game Over Overlay -->
-      <section id="gameover-overlay" class="overlay hidden">
-        <div class="panel gameover-panel">
-          <div class="gameover-tag" id="gameover-tag">پایان موج</div>
-          <h2 class="panel-title" id="gameover-title">ماشین‌ها از پل گذشتند!</h2>
-
-          <div class="score-hero">
-            <span class="score-hero-label">امتیاز نهایی</span>
-            <strong id="go-score" class="score-hero-value">۰</strong>
-            <span id="go-new-record" class="new-record hidden">🏆 رکورد جدید ثبت شد!</span>
-          </div>
-
-          <div class="stats-grid">
-            <div class="go-stat">
-              <span>ماشین‌های منحرف‌شده</span>
-              <strong id="go-cars">۰</strong>
-            </div>
-            <div class="go-stat">
-              <span>شیشه‌های شکسته</span>
-              <strong id="go-windshields">۰</strong>
-            </div>
-            <div class="go-stat">
-              <span>بیشترین کمبو</span>
-              <strong id="go-combo">×۰</strong>
-            </div>
-            <div class="go-stat">
-              <span>واکنش زنجیره‌ای</span>
-              <strong id="go-chains">۰</strong>
-            </div>
-          </div>
-
-          <div class="mode-actions">
-            <button id="btn-play-again" class="primary-btn" type="button">🔥 بازی دوباره</button>
-            <button id="btn-menu-gameover" class="secondary-btn" type="button">منوی اصلی</button>
-          </div>
-        </div>
-      </section>
+          <div class="game-bottom"><div><span class="bottom-icon">✧</span><span>یه حرکت تا یه رکورد جدید!</span></div><span class="game-number" dir="ltr">GOOD LUCK & HAVE FUN <b>✳</b></span></div>
+          <div class="mobile-arrows" aria-label="کنترل‌های جهت‌دار"><button data-direction="up" aria-label="بالا">↑</button><div><button data-direction="left" aria-label="چپ">←</button><button data-direction="down" aria-label="پایین">↓</button><button data-direction="right" aria-label="راست">→</button></div></div>
+        </section>
+      </main>
+      <footer><span>ساخته شده برای ذهن‌های کنجکاو <b>✳</b></span><span dir="ltr">A LITTLE GAME. A BIG CHALLENGE.</span><span>شماره <b dir="ltr">01 / 2048</b></span></footer>
+      <div class="sr-only" aria-live="polite" id="announcement"></div>
     </div>
-
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
